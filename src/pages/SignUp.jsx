@@ -1,7 +1,123 @@
 import React from "react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ReactComponent as ArrowRight } from "../assets/svg/keyboardArrowRightIcon.svg";
+import VisIcon from "../assets/svg/visibilityIcon.svg";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { setDoc, doc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase.config";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import OAuth from "../components/OAuth";
 
 function SignUp() {
-  return <div>Sign Up</div>;
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const { name, email, password } = formData;
+  const navigate = useNavigate();
+
+  const onChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const authentication = getAuth();
+      const userCreds = await createUserWithEmailAndPassword(
+        authentication,
+        email,
+        password
+      );
+
+      const user = userCreds.user;
+
+      updateProfile(authentication.currentUser, {
+        displayName: name,
+      });
+
+      const formDataCopy = { ...formData };
+      delete formDataCopy.password;
+      formDataCopy.timestamp = serverTimestamp();
+      await setDoc(doc(db, "users", user.uid), formDataCopy);
+
+      navigate("/");
+    } catch (error) {
+      toast.error("Error with registration");
+    }
+  };
+
+  return (
+    <>
+      <div className="pageContainer">
+        <header>
+          <p className="pageHeader">Register</p>
+        </header>
+        <main>
+          <form onSubmit={onSubmit}>
+            <input
+              type="text"
+              className="nameInput"
+              placeholder="Name"
+              id="name"
+              value={name}
+              onChange={onChange}
+            />
+            <input
+              type="text"
+              className="emailInput"
+              placeholder="Email"
+              id="email"
+              value={email}
+              onChange={onChange}
+            />
+            <div className="passwordInputDiv">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="passwordInput"
+                placeholder="Password"
+                id="password"
+                value={password}
+                onChange={onChange}
+              />
+              <img
+                className="showPassword"
+                src={VisIcon}
+                alt="show password"
+                onClick={() => setShowPassword((prevState) => !prevState)}
+              />
+            </div>
+            <Link to="/forgot-password" className="forgotPasswordLink">
+              Forgot Password
+            </Link>
+
+            <div className="signInBar">
+              <p className="signInText"> Sign Up</p>
+              <button className="signInButton">
+                <ArrowRight fill="#ffffff" />
+              </button>
+            </div>
+          </form>
+        </main>
+        <OAuth />
+
+        <Link to="/sign-in" className="registerLink">
+          Sign In Instead
+        </Link>
+      </div>
+    </>
+  );
 }
 
 export default SignUp;
