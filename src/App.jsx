@@ -6,6 +6,7 @@ import Profile from "./pages/Profile";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ForgotPass from "./pages/ForgotPass";
+import Category from "./pages/Category";
 import PrivateRouter from "./components/PrivateRouter";
 import Navbar from "./components/Navbar";
 import { ToastContainer } from "react-toastify";
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Explore />} />
           <Route path="/offers" element={<Offers />} />
+          <Route path="/category/:categoryName" element={<Category />} />
           <Route path="/profile" element={<PrivateRouter />}>
             <Route path="/profile" element={<Profile />} />
           </Route>
