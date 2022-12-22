@@ -5,7 +5,7 @@ import { ReactComponent as DeleteIcon } from "../assets/svg/deleteIcon.svg";
 
 function ListingItem({ listing, id, onDelete }) {
   return (
-    <ul className="catergoryListing">
+    <ul className="categoryListing">
       <Link
         to={`/category/${listing.type}/${id}`}
         className="categoryListingLink"
@@ -29,10 +29,11 @@ function ListingItem({ listing, id, onDelete }) {
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
             {listing.type === "rent" && " / Month"}
           </p>
-          <p> Condition: </p>
-          <p>
-            {listing.condition === "used" ? <h2>used</h2> : <h2>brand new</h2>}
-          </p>
+          <div>
+            <p className="categoryListingInfoDiv">
+              Condition: {listing.condition === "used" ? "used" : "brand new"}
+            </p>
+          </div>
         </div>
       </Link>
 

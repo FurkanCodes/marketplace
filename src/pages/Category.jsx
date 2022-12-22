@@ -49,6 +49,8 @@ function Category() {
     fetchListings();
   }, [params.categoryName]);
 
+  const onDelete = () => {};
+
   return (
     <div className="category">
       <header>
@@ -59,13 +61,16 @@ function Category() {
       ) : listings && listings.length > 0 ? (
         <>
           <main>
-            {listings.map((listing) => (
-              <ListingItem
-                listing={listing.data}
-                id={listing.id}
-                key={listing.id}
-              />
-            ))}
+            <ul className="categoryListings">
+              {listings.map((listing) => (
+                <ListingItem
+                  listing={listing.data}
+                  id={listing.id}
+                  key={listing.id}
+                  onDelete={() => onDelete()}
+                />
+              ))}
+            </ul>
           </main>
         </>
       ) : (
