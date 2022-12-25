@@ -744,6 +744,14 @@ ul {
   display: flex;
 }
 
+@media screen and (max-width: 1024px) {
+  .formButtons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
 .formButton,
 .formInput,
 .formInputAddress,
@@ -825,12 +833,7 @@ ul {
   border-radius: 1rem;
   margin-right: 1rem;
 }
-
-.createListingButton {
-  margin-top: 5rem;
-}
-
-.offers {
+formButtons .offers {
   margin-bottom: 10rem;
 }
 
