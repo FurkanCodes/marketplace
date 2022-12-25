@@ -75,14 +75,15 @@ function CreateListing() {
     let location;
     if (geoLoc) {
       const response = await fetch(
-        `http://api.positionstack.com/v1/forward?access_key=${
+        `https://us1.locationiq.com/v1/search?key=${
           import.meta.env.VITE_GEOLOC_API_KEY
-        }&query=${address}`
+        }&q=${address}&format=json`
       );
       const geoData = await response.json();
-      geolocation.lat = geoData.data[0].latitude ?? 0;
-      geolocation.lng = geoData.data[0].longitude ?? 0;
-      location = geoData.data[0].label;
+
+      geolocation.lat = geoData[0].lat ?? 0;
+      geolocation.lng = geoData[0].lon ?? 0;
+      location = geoData[0].display_name;
       console.log(geolocation.lat, geolocation.lng, location);
     } else {
       geolocation.lat = latitude;
