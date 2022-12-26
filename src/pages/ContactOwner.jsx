@@ -7,62 +7,68 @@ import { toast } from "react-toastify";
 
 function ContactOwner() {
   const [message, setMessage] = useState();
-  const [owner, setOwner] = useState({});
+  const [owner, setOwner] = useState(null);
   const [searchParams, setsearchParams] = useSearchParams();
 
   const params = useParams();
 
   useEffect(() => {
+    const ownerId = params.ownerId.split("=");
     const getOwner = async () => {
-      const docRef = doc(db, "users", params.ownerId);
+      const docRef = doc(db, "users", ownerId[0]);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
         setOwner(docSnap.data());
       } else {
-        toast.error("Could not get owner data");
+        toast.error("Could not get landlord data");
       }
     };
 
     getOwner();
   }, [params.ownerId]);
-
   const onChange = (e) => {
     setMessage(e.target.value);
   };
+
   return (
     <div className="pageContainer">
       <header>
         <p className="pageHeader">Contact Owner</p>
       </header>
-      <main>
-        <div className="contactLandlord">
-          <p className="landlordName">{owner.name}</p>
-        </div>
-        <form className="messageForm">
-          <div className="messageDiv">
-            <label className="messageLabel" htmlFor="message">
-              Message
-            </label>
-            <textarea
-              name="message"
-              id="message"
-              className="textarea"
-              value={message}
-              onChange={onChange}
-            ></textarea>
+
+      {owner !== null && (
+        <main>
+          <div className="contactLandlord">
+            <p className="landlordName">Contact {owner?.name}</p>
           </div>
-          <a
-            href={`mailto:${owner.email}?Subject=${searchParams.get(
-              "listingName"
-            )}&body=${message}`}
-          >
-            <button className="primaryButton" type="button">
-              Send Message
-            </button>
-          </a>
-        </form>
-      </main>
+
+          <form className="messageForm">
+            <div className="messageDiv">
+              <label htmlFor="message" className="messageLabel">
+                Message
+              </label>
+              <textarea
+                name="message"
+                id="message"
+                className="textarea"
+                value={message}
+                onChange={onChange}
+              ></textarea>
+            </div>
+
+            <a
+              href={`mailto:${owner.email}?Subject=${searchParams.get(
+                "listingName"
+              )}&body=${message}`}
+            >
+              <button type="button" className="primaryButton">
+                Send Message
+              </button>
+            </a>
+          </form>
+        </main>
+      )}
     </div>
   );
 }
