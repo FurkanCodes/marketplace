@@ -7,6 +7,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
@@ -142,8 +143,21 @@ function CreateListing() {
       toast.error("image not uploaded");
       return;
     });
-    console.log(imgUrls);
+    const dataFormCopy = {
+      ...dataForm,
+      imgUrls,
+      geoLoc,
+      timestamp: serverTimestamp(),
+    };
+    delete dataFormCopy.images;
+    delete dataFormCopy.address;
+    location && (dataFormCopy.location = location);
+    !dataFormCopy.offer && delete dataFormCopy.discountedPrice;
+
+    const docRef = await addDoc(collection(db, "listings"), dataFormCopy);
     setLoading(false);
+    toast.success("listing saved");
+    navigate(`/category/${dataFormCopy.type}/${docRef.id}`);
   };
 
   const onMutate = (e) => {
@@ -276,16 +290,18 @@ function CreateListing() {
             value={name}
             onChange={onMutate}
             maxLength="32"
-            minLength="10"
+            minLength="3"
             required
           />
           <label className="formLabel">Condition</label>
           <div className="formButtons">
             <button
-              className={condition ? "formButtonActive" : "formButton"}
+              className={
+                condition === "new" ? "formButtonActive" : "formButton"
+              }
               type="button"
               id="condition"
-              value={true}
+              value={"new"}
               onClick={onMutate}
               min="1"
               max="50"
@@ -294,13 +310,11 @@ function CreateListing() {
             </button>
             <button
               className={
-                !condition && condition !== null
-                  ? "formButtonActive"
-                  : "formButton"
+                condition !== "new" ? "formButtonActive" : "formButton"
               }
               type="button"
               id="condition"
-              value={false}
+              value={"used"}
               onClick={onMutate}
             >
               Used
