@@ -90,16 +90,16 @@ function CreateListing() {
         }&q=${address}&format=json`
       );
       const geoData = await response.json();
-
       geolocation.lat = geoData[0].lat ?? 0;
       geolocation.lng = geoData[0].lon ?? 0;
       location = geoData[0].display_name;
-      console.log(geolocation.lat, geolocation.lng, location);
+      // console.log(geolocation.lat, geolocation.lng);
     } else {
       geolocation.lat = latitude;
       geolocation.lng = longitude;
       location = address;
     }
+
     // store image
     const storeImg = async (image) => {
       return new Promise((resolve, reject) => {
@@ -146,9 +146,10 @@ function CreateListing() {
     const dataFormCopy = {
       ...dataForm,
       imgUrls,
-      geoLoc,
+      geolocation,
       timestamp: serverTimestamp(),
     };
+
     delete dataFormCopy.images;
     delete dataFormCopy.address;
     location && (dataFormCopy.location = location);
@@ -310,7 +311,7 @@ function CreateListing() {
             </button>
             <button
               className={
-                condition !== "new" ? "formButtonActive" : "formButton"
+                condition === "used" ? "formButtonActive" : "formButton"
               }
               type="button"
               id="condition"

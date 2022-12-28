@@ -6,9 +6,12 @@ import { db } from "../firebase.config";
 import { getAuth } from "firebase/auth";
 import { CircleLoader } from "react-spinners";
 import shareIcon from "../assets/svg/shareIcon.svg";
-
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { list } from "firebase/storage";
+import ListingItem from "../components/ListingItem";
 function Listing() {
   const [listing, setListing] = useState({});
+  const [geoLocation, setGeoLocation] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shareCopied, setShareCopied] = useState(null);
 
@@ -22,6 +25,8 @@ function Listing() {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         console.log(docSnap.data());
+        // console.log(docSnap.data().geolocation);
+        setGeoLocation(docSnap.data().geolocation);
         setListing(docSnap.data());
         setLoading(false);
       } else {
@@ -29,6 +34,7 @@ function Listing() {
         console.log("No such document!");
       }
     };
+
     fetchListing();
   }, [navigate, params.listingId]);
 
@@ -66,7 +72,26 @@ function Listing() {
           </p>
         )}
 
-        <p className="listingLocationTitle">LOcation</p>
+        <p className="listingLocationTitle">Location</p>
+
+        <div className="leafletContainer">
+          {!loading && (
+            <MapContainer
+              style={{ height: "100%", width: "100%" }}
+              center={[geoLocation.lat, geoLocation.lng]}
+              zoom={13}
+              scrollWheelZoom={false}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <Marker position={[geoLocation.lat, geoLocation.lng]}>
+                <Popup>{listing.location}</Popup>
+              </Marker>
+            </MapContainer>
+          )}
+        </div>
 
         {auth.currentUser?.uid !== listing.userRef && (
           <Link
