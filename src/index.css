@@ -368,6 +368,17 @@ ul {
   padding: 0.25rem 0.5rem;
   border-radius: 1rem;
 }
+
+.swiperSlideType {
+  color: #ffffff;
+  position: absolute;
+  top: 30px;
+
+  font-weight: 600;
+  max-width: 90%;
+  background-color: #00cc66;
+  padding: 0.25rem 0.5rem;
+}
 @media (min-width: 1024px) {
   .swiperSlidePrice {
     font-size: 1.25rem;

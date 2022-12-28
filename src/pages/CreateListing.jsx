@@ -322,6 +322,7 @@ function CreateListing() {
             </button>
           </div>
           <label className="formLabel">Address</label>
+          <p>FORMAT: Street, Neighbourhood, City</p>
           <textarea
             className="formInputAddress"
             type="text"

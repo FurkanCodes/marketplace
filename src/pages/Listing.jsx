@@ -7,11 +7,14 @@ import { getAuth } from "firebase/auth";
 import { CircleLoader } from "react-spinners";
 import shareIcon from "../assets/svg/shareIcon.svg";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { list } from "firebase/storage";
-import ListingItem from "../components/ListingItem";
+import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css/bundle";
+
 function Listing() {
   const [listing, setListing] = useState({});
   const [geoLocation, setGeoLocation] = useState([]);
+  const [imgUrls, setimgUrls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shareCopied, setShareCopied] = useState(null);
 
@@ -24,8 +27,10 @@ function Listing() {
       const docRef = doc(db, "listings", params.listingId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        console.log(docSnap.data());
+        // console.log(docSnap.data());
         // console.log(docSnap.data().geolocation);
+        // console.log(docSnap.data().imgUrls);
+        setimgUrls(docSnap.data().imgUrls);
         setGeoLocation(docSnap.data().geolocation);
         setListing(docSnap.data());
         setLoading(false);
@@ -43,6 +48,32 @@ function Listing() {
   }
   return (
     <main>
+      {/* <img src={imgUrls[0]} alt="" /> */}
+      <Swiper
+        modules={[Navigation, Pagination, Scrollbar, A11y]}
+        scrollbar={{ draggable: true }}
+        slidesPerView={1}
+        pagination={{ clickable: true }}
+      >
+        {imgUrls.map((url, index) => (
+          <SwiperSlide key={index}>
+            <div
+              style={{
+                backgroundImage: `url("${imgUrls[index]}")`,
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+                width: 400,
+                height: 400,
+              }}
+            >
+              {" "}
+              <img />
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
       <div
         className="shareIconDiv"
         onClick={() => {

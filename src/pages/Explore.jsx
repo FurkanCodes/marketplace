@@ -8,6 +8,7 @@ import Vacuum from "../assets/jpg/Vacuum.jpeg";
 import Printer from "../assets/jpg/Printer.jpeg";
 import FemaleDress from "../assets/jpg/FemaleDress.jpeg";
 import MaleDress from "../assets/jpg/MaleDress.jpg";
+import Slider from "../components/Slider";
 
 function Explore() {
   return (
@@ -16,6 +17,7 @@ function Explore() {
         <p className="pageHeader">Explore</p>
       </header>
       <main>
+        <Slider />
         <p className="exploreCategoryHeading">Categories</p>
         <div className="exploreCategories">
           <Link to="/category/consoles">

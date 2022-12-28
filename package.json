@@ -17,6 +17,7 @@
     "react-router-dom": "^6.5.0",
     "react-spinners": "^0.13.7",
     "react-toastify": "^9.1.1",
+    "swiper": "^8.4.5",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
