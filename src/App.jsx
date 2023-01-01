@@ -15,12 +15,14 @@ import CreateListing from "./pages/CreateListing";
 import EditListings from "./pages/EditListing";
 import Listing from "./pages/Listing";
 import ContactOwner from "./pages/ContactOwner";
+import HomePage from "./pages/HomePage";
 function App() {
   return (
     <>
       <Router>
         <Routes>
-          <Route path="/" element={<Explore />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/explore" element={<Explore />} />
           <Route path="/offers" element={<Offers />} />
           <Route path="/category/:categoryName" element={<Category />} />
           <Route path="/profile" element={<PrivateRouter />}>

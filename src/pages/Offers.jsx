@@ -84,8 +84,6 @@ function Category() {
     }
   };
 
-  const onDelete = () => {};
-
   return (
     <div className="category">
       <header>
@@ -102,7 +100,6 @@ function Category() {
                   listing={listing.data}
                   id={listing.id}
                   key={listing.id}
-                  onDelete={() => onDelete()}
                 />
               ))}
             </ul>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import consoleImage from "../assets/jpg/GamePad.jpg";
 import phoneImage from "../assets/jpg/Phone.jpeg";
