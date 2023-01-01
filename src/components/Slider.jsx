@@ -35,6 +35,9 @@ function Slider() {
   if (loading) {
     return <CircleLoader />;
   }
+  if (listings.length === 0) {
+    return <></>;
+  }
   return (
     listings && (
       <>

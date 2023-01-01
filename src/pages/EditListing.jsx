@@ -7,16 +7,17 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import CircleLoader from "react-spinners/CircleLoader";
 import { toast } from "react-toastify";
-
-function CreateListing() {
+import { useParams } from "react-router-dom";
+function EditListing() {
   const [geoLoc, setGeoEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [listing, setListing] = useState(false);
   const [dataForm, setDataForm] = useState({
     type: "",
     name: "",
@@ -45,8 +46,37 @@ function CreateListing() {
 
   const auth = getAuth();
   const navigate = useNavigate();
+  const params = useParams();
   const isMounted = useRef(true);
 
+  //redirect if listing is not user's
+  useEffect(() => {
+    if (listing && listing.userRef !== auth.currentUser.uid) {
+      toast.error("you cannot edit that listing");
+      navigate("/");
+    }
+  });
+
+  // fetches listing to edit
+  useEffect(() => {
+    setLoading(true);
+    const fetchListing = async () => {
+      const docRef = doc(db, "listings", params.listingId);
+
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        setListing(snap.data());
+        setDataForm({ ...snap.data(), address: snap.data().location });
+        setLoading(false);
+      } else {
+        navigate("/");
+        toast.error("listing does not exist");
+      }
+    };
+    fetchListing();
+  }, [navigate, params.listingId]);
+
+  // sets userRef to logged in user
   useEffect(() => {
     if (isMounted) {
       onAuthStateChanged(auth, (user) => {
@@ -153,7 +183,9 @@ function CreateListing() {
     location && (dataFormCopy.location = location);
     !dataFormCopy.offer && delete dataFormCopy.discountedPrice;
 
-    const docRef = await addDoc(collection(db, "listings"), dataFormCopy);
+    //update listing
+    const docRef = await doc(db, "listings", params.listingId);
+    await updateDoc(docRef, dataFormCopy);
     setLoading(false);
     toast.success("listing saved");
     navigate(`/category/${dataFormCopy.type}/${docRef.id}`);
@@ -425,7 +457,7 @@ function CreateListing() {
             required
           />
           <button type="submit" className="primaryButton createListingButton">
-            Create Listing
+            Edit Listing
           </button>
         </form>
       </main>
@@ -433,4 +465,4 @@ function CreateListing() {
   );
 }
 
-export default CreateListing;
+export default EditListing;

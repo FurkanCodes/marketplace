@@ -19,6 +19,7 @@ function Category() {
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
   const params = useParams();
+  const [lastFetchedListings, setLastFetchedListing] = useState(null);
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -27,10 +28,14 @@ function Category() {
           collection(db, "listings"),
           where("offer", "==", true),
           orderBy("timestamp", "desc"),
-          limit(10)
+          limit(2)
         );
 
         const querySnapshot = await getDocs(q);
+
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        setLastFetchedListing(lastVisible);
+
         const listings = [];
 
         querySnapshot.forEach((doc) => {
@@ -48,6 +53,36 @@ function Category() {
 
     fetchListings();
   }, []);
+
+  const onFetchMoreListings = async () => {
+    try {
+      const q = query(
+        collection(db, "listings"),
+        where("offer", "==", true),
+        orderBy("timestamp", "desc"),
+        startAfter(lastFetchedListings),
+        limit(10)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      setLastFetchedListing(lastVisible);
+
+      const listings = [];
+
+      querySnapshot.forEach((doc) => {
+        return listings.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      setListings((prevState) => [...prevState, ...listings]);
+      setLoading(false);
+    } catch (error) {
+      toast.error("error");
+    }
+  };
 
   const onDelete = () => {};
 
@@ -72,6 +107,13 @@ function Category() {
               ))}
             </ul>
           </main>
+          <br />
+          <br />
+          {lastFetchedListings && (
+            <p className="loadMore" onClick={onFetchMoreListings}>
+              Load More
+            </p>
+          )}
         </>
       ) : (
         <p>No listings for offers</p>
